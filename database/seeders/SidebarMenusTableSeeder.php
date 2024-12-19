@@ -21,6 +21,7 @@ class SidebarMenusTableSeeder extends Seeder
             'order' => 1,
             'is_active' => true,
             'is_parent' => true,
+            'roles' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -33,6 +34,7 @@ class SidebarMenusTableSeeder extends Seeder
             'order' => 1,
             'is_active' => true,
             'is_parent' => false,
+            'roles' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -45,6 +47,7 @@ class SidebarMenusTableSeeder extends Seeder
             'order' => 2,
             'is_active' => true,
             'is_parent' => false,
+            'roles' => json_encode(['admin']),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -57,6 +60,7 @@ class SidebarMenusTableSeeder extends Seeder
             'order' => 999,
             'is_active' => true,
             'is_parent' => false,
+            'roles' => json_encode(['admin']),
             'created_at' => now(),
             'updated_at' => now(),
         ]);

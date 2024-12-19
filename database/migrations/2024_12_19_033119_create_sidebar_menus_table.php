@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('order');
             $table->boolean('is_active')->default(true);
             $table->boolean('is_parent')->default(false);
+            $table->json('roles')->nullable();
             $table->timestamps();
 
             $table->foreign('parent_id')->references('id')->on('sidebar_menus')->onDelete('cascade');
