@@ -1,13 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import {
-    Calendar,
-    ChevronUp,
-    Home,
-    Inbox,
-    Search,
-    Settings,
-    User2,
-} from 'lucide-react';
+import { ChevronUp, User2 } from 'lucide-react';
 
 import {
     DropdownMenu,
@@ -28,39 +20,39 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
-// Menu items.
-const items = [
-    {
-        title: 'Home',
-        url: '#',
-        icon: Home,
-    },
-    {
-        title: 'Inbox',
-        url: '#',
-        icon: Inbox,
-    },
-    {
-        title: 'Calendar',
-        url: '#',
-        icon: Calendar,
-    },
-    {
-        title: 'Search',
-        url: '#',
-        icon: Search,
-    },
-    {
-        title: 'Settings',
-        url: '#',
-        icon: Settings,
-    },
-];
+import Icon from '@/components/ui/icon';
+import dynamicIconImports from 'lucide-react/dynamicIconImports';
+
+interface SidebarItemsProps {
+    title: string;
+    children: SidebarItemsProps[];
+    order: number;
+    is_parent: boolean;
+    is_active: boolean;
+    icon?: keyof typeof dynamicIconImports;
+    url?: string;
+}
 
 export function AppSidebar() {
     const user = usePage().props.auth.user;
     const { open } = useSidebar();
+
+    const [menu, setMenu] = useState<SidebarItemsProps[]>([]);
+
+    useEffect(() => {
+        axios
+            .get('/sidebar-menus')
+            .then((res) => {
+                setMenu(res.data);
+                console.log(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
 
     return (
         <Sidebar collapsible="icon">
@@ -84,23 +76,27 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Application</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {items.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <a href={item.url}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
-                                        </a>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                {menu.map((group) => (
+                    <SidebarGroup key={group.title}>
+                        <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {group.children.map((item) => (
+                                    <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuButton asChild>
+                                            <a href={item.url}>
+                                                {item?.icon && (
+                                                    <Icon name={item.icon} />
+                                                )}
+                                                <span>{item.title}</span>
+                                            </a>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>
@@ -117,15 +113,17 @@ export function AppSidebar() {
                                 className="w-[--radix-popper-anchor-width]"
                             >
                                 <Link href={route('profile.edit')}>
-                                    <DropdownMenuItem className='cursor-pointer'>Profile</DropdownMenuItem>
+                                    <DropdownMenuItem className="cursor-pointer">
+                                        Profile
+                                    </DropdownMenuItem>
                                 </Link>
                                 <Link
                                     href={route('logout')}
                                     as="button"
                                     method="post"
-                                    className='w-full'
+                                    className="w-full"
                                 >
-                                    <DropdownMenuItem className='!text-red-500 cursor-pointer'>
+                                    <DropdownMenuItem className="cursor-pointer !text-red-500">
                                         Sign out
                                     </DropdownMenuItem>
                                 </Link>
